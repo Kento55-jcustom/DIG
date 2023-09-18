@@ -1,0 +1,47 @@
+<h1>More DIG</h1>
+<h3>投稿詳細</h3>
+<div class="ibane">
+  <p><%= @ibane.name %></p>
+  <p><%= @ibane.artist %></p>
+  <p><%= @ibane.link %></p>
+  <p><%= @ibane.about %></p>
+  <p><%= @ibane.created_at %></p>
+</div>
+<% if user_signed_in? %>
+      <% if current_user.already_liked?(@ibane) %>
+        <%= link_to ibane_like_path(@ibane), method: :delete do %>
+            <i class="fas fa-heart"></i><%= @ibane.likes.count %>
+        <% end %>
+      <% else %>
+        <%= link_to ibane_likes_path(@ibane), method: :post do %>
+            <i class="far fa-heart"></i><%= @ibane.likes.count %>
+        <% end %>
+      <% end %>
+    <% else %>
+    <i class="far fa-heart"></i><%= @ibane.likes.count %>
+<% end %>
+<% @ibane.tags.each do |tag| %>
+    <span><%= tag.name %></span>
+<% end %>
+<div class="comment-wrapper">
+  <p>コメント一覧</p>
+  <% @comments.each do |c| %>
+    <div>
+      <%= c.user.email unless c.user.blank? %>
+      <br>
+      <%= c.content %>
+    </div>
+      <br>
+  <% end %>
+
+  <% if user_signed_in? %>
+    <%= form_with(model: [@ibane, @comment], local: true) do |f| %>
+      <%= f.text_area :content %>
+      <%= button_tag type: "submit" do %>
+        <i class="far fa-comments"></i> コメントする
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
+<%= link_to "投稿一覧に戻る", ibanes_path %>
+<%= link_to "編集する", edit_ibane_path(@ibane.id) %>

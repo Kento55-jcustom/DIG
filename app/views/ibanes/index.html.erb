@@ -1,0 +1,67 @@
+<h1>More DIG</h1>
+<h3>曲一覧</h3>
+<h3>投稿を検索</h3>
+ <%= form_tag({controller:"ibanes",action:"index"}, method: :get) do %>
+    <%= text_field_tag :search %>
+    <% Tag.all.each do |t| %>
+        <li><%= check_box :tag_ids, t.name %><%= t.name %></li>
+    <% end %>
+    <%= submit_tag '検索する'  %>
+<% end %>
+<%= link_to "新規投稿へ", new_ibane_path %>
+
+<div class="ibanes-container">
+    <% @ibanes.each do |t| %>
+        <div class="ibane">
+            <%= t.name %>
+            <%= t.artist %>
+            <%= t.link %>
+            <%= t.about %> 
+
+            <% if user_signed_in? %>
+                <% if current_user.already_liked?(t) %>
+                    <%= link_to ibane_like_path(id: t.id, ibane_id: t.id), method: :delete do %>
+                        <i class="fas fa-heart"></i><%= t.likes.count %>
+                    <% end %>
+                <% else %>
+                    <%= link_to ibane_likes_path(id: t.id, ibane_id: t.id), method: :post do %>
+                        <i class="far fa-heart"></i><%= t.likes.count %>
+                    <% end %>
+                <% end %>
+            <% else %>
+                <i class="far fa-heart"></i><%= t.likes.count %>
+            <% end %>
+
+            <%= link_to "詳細へ", ibane_path(t.id) %>
+                <% if user_signed_in? && current_user.id == t.user_id %>
+                    <%= link_to "編集する", edit_ibane_path(t.id) %>
+                    <%= button_to "削除する", ibane_path(t.id), method: :delete %>
+                <% end %> 
+
+                <span class="star-rating">
+   <span class="star-rating-front" style="width: <%= getPercent(t.overall) %>%;">★★★★★</span>
+   <span class="star-rating-back">★★★★★</span>
+</span> 
+
+<span class="star-rating">
+   <span class="star-rating-front" style="width: <%= getPercent(t.level) %>%;">★★★★★</span>
+   <span class="star-rating-back">★★★★★</span>
+</span> 
+
+<span class="star-rating">
+   <span class="star-rating-front" style="width: <%= getPercent(t.evaluation) %>%;">★★★★★</span>
+   <span class="star-rating-back">★★★★★</span>
+</span> 
+
+<span class="star-rating">
+   <span class="star-rating-front" style="width: <%= getPercent(t.assessment) %>%;">★★★★★</span>
+   <span class="star-rating-back">★★★★★</span>
+</span> 
+
+<span class="star-rating">
+   <span class="star-rating-front" style="width: <%= getPercent(t.valuation) %>%;">★★★★★</span>
+   <span class="star-rating-back">★★★★★</span>
+</span> 
+         </div>
+    <% end %>
+</div>
